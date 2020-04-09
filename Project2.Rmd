@@ -1,0 +1,84 @@
+---
+title: "Let's Make A Deal"
+author: "Antoine, Emmanuel, Syrine"
+date: "4/9/2020"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+resultKeep <- c()
+resultChange <- c()
+resultRandom <- c()
+library(ggplot2)
+library(rmarkdown)
+
+```
+
+## Introduction
+
+Our project is based on a TV Show Game. The rules go by this, 3 doors, behind one of them a million dollar. Behind the other only a dime. The player has to choose a door then the presentator will open a 'loosing' door. Will the player stay on his first choice ? Will he change door ? We'll try to compute the best strategy. First we had to code 3 strategies : Keep, Change, Random.
+
+```{r function}
+change <- function(nb_door = 3) {
+  box <- c(1000000,rep(0.1,nb_door-1))
+  choice <- sample(1:nb_door,1)
+  if (choice == 1) {
+    box[2]
+  } else {
+    box[1]
+  }
+}
+
+keep <- function(nb_door = 3) {
+  box <- c(1000000,rep(0.1,nb_door-1))
+  choice <- sample(1:nb_door,1)
+  box[choice]
+}
+
+random <- function() {
+  box <- c(1000000,0.1)
+  choice <- sample(1:2,1)
+  box[choice]
+}
+```
+
+```{r process,echo=FALSE}
+for (i in 1:1000) {
+  resultChange <- c(resultChange,change())
+  resultKeep <- c(resultKeep, keep())
+  resultRandom <- c(resultRandom, random())
+}
+```
+
+## Results
+
+To see which strategy works the best, we had to stock the score obtained for each game played considering the strategy. This allowed us to obtain 3 vectors : resultChange, resultKeep and resultRandom. By computing the mean of theses vectors we'll obtain the average money won for each strategy
+
+```{r plot, echo=FALSE}
+resultat <- data.frame(strategy = c('Change','Keep','Random'), mean = c(mean(resultChange), mean(resultKeep),mean(resultRandom)))
+ggplot(data = resultat, aes(x = strategy, y = mean)) + geom_bar(stat = "identity") + labs( title = "Average amount of dollar won each game for each strategy")
+```
+
+## Variation
+
+We can wonder what happends if we play not with 3 doors but with 100. The rules change a bit, now the player chooses one door then the presentator open 98 others, leaving to the player the choice to either keep its first door or to choose the one that the presentator didn't opened.
+
+```{r process variant,echo=FALSE}
+resultChange <- c()
+resultKeep <- c()
+resultRandom <- c()
+for (i in 1:1000) {
+  resultChange <- c(resultChange,change(100))
+  resultKeep <- c(resultKeep, keep(100))
+  resultRandom <- c(resultRandom, random())
+}
+
+resultat <- data.frame(strategy = c('Change','Keep','Random'), mean = c(mean(resultChange), mean(resultKeep),mean(resultRandom)))
+ggplot(data = resultat, aes(x = strategy, y = mean)) + geom_bar(stat = "identity") + labs( title = "Average amount of dollar won each game for each strategy")
+```
+
+## Interpretation
+
+As we could expect, the changing strategy works better with a consequent number of door. Because the chance to get the winning door on the first time is low (1/100 here).
