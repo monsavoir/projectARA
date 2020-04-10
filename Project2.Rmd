@@ -25,7 +25,7 @@ Our project is based on a TV Show Game. The rules go by this, 3 boxes, inside on
 ```{r function}
 #Function that simulate a game with the changing strategy
 change <- function(nb_box = 3) {
-  box <- c(1000000,rep(0.1,nb_box-1))
+  box <- c(1,rep(0,nb_box-1))
   choice <- sample(1:nb_box,1)
   if (choice == 1) {
     box[2] #all the others boxes have the same content
@@ -36,14 +36,14 @@ change <- function(nb_box = 3) {
 
 
 keep <- function(nb_box = 3) {
-  box <- c(1000000,rep(0.1,nb_box-1))
+  box <- c(1,rep(0,nb_box-1))
   choice <- sample(1:nb_box,1) #the player will keep his first box no matter what
   box[choice]
 }
 
 #In this function, no argument needed because it wont change anything
 random <- function() {
-  box <- c(1000000,0.1)
+  box <- c(1,0)
   choice <- sample(1:2,1) #Very simplified, at the end the player will have the choice between a wrong one and the right one
   box[choice]
 }
@@ -63,8 +63,8 @@ To see which strategy works the best, we had to stock the score obtained for eac
 
 ```{r plot, echo=FALSE}
 #Stocking our results into a dataframe in order to plot with ggplot2
-resultat <- data.frame(strategy = c('Change','Keep','Random'), mean = c(mean(resultChange), mean(resultKeep),mean(resultRandom)))
-ggplot(data = resultat, aes(x = strategy, y = mean)) + geom_bar(stat = "identity") + labs( title = "Average amount of dollar won each game for each strategy")
+resultat <- data.frame(strategy = c('Change','Keep','Random'), wins = c(sum(resultChange), sum(resultKeep), sum(resultRandom)))
+ggplot(data = resultat, aes(x = strategy, y = wins)) + geom_bar(stat = 'identity') + labs( title = "Number of wins for each strategy over 1000 games")
 ```
 
 ## Variation
@@ -82,8 +82,8 @@ for (i in 1:1000) {
   resultRandom <- c(resultRandom, random())
 }
 
-resultat <- data.frame(strategy = c('Change','Keep','Random'), mean = c(mean(resultChange), mean(resultKeep),mean(resultRandom)))
-ggplot(data = resultat, aes(x = strategy, y = mean)) + geom_bar(stat = "identity") + labs( title = "Average amount of dollar won each game for each strategy")
+resultat <- data.frame(strategy = c('Change','Keep','Random'), wins = c(sum(resultChange),sum(resultKeep),sum(resultRandom)))
+ggplot(data = resultat, aes(x = strategy, y = wins)) + geom_bar(stat = "identity") + labs( title = "Number of wins for each strategy over 1000 games")
 ```
 
 ## Interpretation
